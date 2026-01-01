@@ -16,7 +16,8 @@ axiosAuth.interceptors.request.use((config) => {
 axiosAuth.interceptors.response.use((response) => response,
     async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
+        // Check if error.response exists before accessing status
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
                 const res = await axiosPublic.post("/auth/refresh-token", {}, { withCredentials: true });
@@ -30,8 +31,7 @@ axiosAuth.interceptors.response.use((response) => response,
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 window.location.href = "/login";
-                return new Promise(() => { });
-
+                return Promise.reject(refreshError);
             }
         }
         return Promise.reject(error)

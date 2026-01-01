@@ -3,24 +3,43 @@ import { useState } from "react";
 import { useSocket } from "../context/socketContext.jsx";
 
 const MessageInput = ({ selectedChat, setMessages }) => {
-  const [content, setContent] = useState("");
+  const [newMessage, setNewMessage] = useState("");
+  const [typing, setTyping] = useState(false);
   const socket = useSocket();
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!content.trim() || !socket || !selectedChat?._id) return;
+    if (!newMessage.trim() || !socket || !selectedChat?._id) return;
     const res = await axiosAuth.post("/message/send", {
       chatId: selectedChat._id,
-      content,
+      content: newMessage,
     });
-    const newMessage = res.data.savedMessage;
+    const savedMessage = res.data.savedMessage;
 
-    setMessages((prev) => [...prev, newMessage]);
-    socket.emit("send-message", newMessage);
-    setContent("");
+    setMessages((prev) => [...prev, savedMessage]);
+    socket.emit("send-message", savedMessage);
+
+    setNewMessage("");
   };
   const typingHandler = (e) => {
-    setContent(e.target.value);
+    setNewMessage(e.target.value);
+    if (!socket) {
+      return;
+    }
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+    let lastTypingTime = new Date().getTime();
+    let timerLength = 3000;
+    setTimeout(() => {
+      let timeNow = new Date().getTime();
+      let timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop-typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   return (
@@ -29,9 +48,9 @@ const MessageInput = ({ selectedChat, setMessages }) => {
       className="p-3 bg-[#F0F2F5] flex items-center gap-2"
     >
       <input
-        value={content}
+        value={newMessage}
         onChange={typingHandler}
-        placeholder="Type a message"
+        placeholder="Type a message..."
         className="flex-1 px-4 py-2 rounded-full outline-none"
       />
 

@@ -7,6 +7,7 @@ const ChatWindow = ({ selectedChat }) => {
   const { user } = useAuth();
   const socket = useSocket();
   const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
   const fetchMessages = async () => {
     if (!selectedChat?._id) return;
@@ -14,20 +15,35 @@ const ChatWindow = ({ selectedChat }) => {
 
     setMessages(response.data.data);
   };
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop-typing", () => setIsTyping(false));
+    return () => {
+      socket.off("typing");
+      socket.off("stop-typing");
+    };
+  }, [socket]);
+
   useEffect(() => {
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [messages]);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("receive-message", (message) => {
+    const handleReceiveMessage = (message) => {
       setMessages((prev) => [...prev, message]);
-    });
+    };
 
-    return () => socket.off("receive-message");
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+    };
   }, [socket]);
 
   useEffect(() => {
@@ -53,7 +69,7 @@ const ChatWindow = ({ selectedChat }) => {
   }
   const otherUser = selectedChat.userIds.find((u) => u._id !== user._id);
   return (
-    <div className="flex-1 flex flex-col bg-[#EFEAE2]">
+    <div className="flex-1 flex flex-col bg-[#EFEAE2] transition-all duration-200">
       {/* CHAT HEADER */}
       <div className="p-4 bg-[#202C33] text-white flex items-center gap-3">
         {/* Other User Profile Picture */}
@@ -77,7 +93,6 @@ const ChatWindow = ({ selectedChat }) => {
         {messages.map((msg) => {
           const senderId =
             typeof msg.sender === "object" ? msg.sender._id : msg.sender;
-          // Convert both to strings for reliable comparison (handles ObjectId vs string mismatch)
           const isOwnMessage =
             senderId && user?._id && String(senderId) === String(user._id);
 
@@ -112,6 +127,8 @@ const ChatWindow = ({ selectedChat }) => {
         <div ref={bottomRef} />
       </div>
       {/* INPUT BOX */}
+      {isTyping && <div className="text-sm text-gray-400">Typing...</div>}
+
       <MessageInput selectedChat={selectedChat} setMessages={setMessages} />
     </div>
   );
