@@ -8,9 +8,9 @@ const Home = () => {
     return (
         <div className="h-screen flex">
             {/*leftside bar*/}
-            <Sidebar setSelectedChat={setSelectedChat} />
+            <Sidebar setSelectedChat={setSelectedChat} selectedChat={selectedChat} />
             {/*right chatting area */}
-            <ChatWindow selectedChat={selectedChat} />
+            <ChatWindow key={selectedChat?._id} selectedChat={selectedChat}    />
 
         </div>
 
