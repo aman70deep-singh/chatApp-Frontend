@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import ProfileModal from "./profileModal.jsx";
 import LogoutConfirmModal from "./logoutConfirmModal.jsx";
 
-const Sidebar = ({ setSelectedChat, selectedChat }) => {
+const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
   const { user, logout } = useAuth();
   const socket = useSocket();
   const [chats, setChats] = useState([]);
@@ -15,6 +15,9 @@ const Sidebar = ({ setSelectedChat, selectedChat }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const isUserOnline = (userId) => onlineUsers?.includes(userId);
+
 
   const handleLogout = () => {
     setShowLogoutConfirm(false);
@@ -92,7 +95,6 @@ const Sidebar = ({ setSelectedChat, selectedChat }) => {
 
   useEffect(() => {
     if (!socket) {
-      console.log("socket is not  available");
       return;
     }
 
@@ -125,6 +127,7 @@ const Sidebar = ({ setSelectedChat, selectedChat }) => {
           {user?.profilePic ? (
             <img
               src={user.profilePic}
+              alt="User profile "
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (
@@ -247,6 +250,8 @@ const Sidebar = ({ setSelectedChat, selectedChat }) => {
 
           {!loading &&
             chats.map((chat) => {
+
+
               const otherUser = chat.userIds?.find((u) => u._id !== user?._id);
 
               return (
@@ -254,24 +259,30 @@ const Sidebar = ({ setSelectedChat, selectedChat }) => {
                   key={chat._id}
                   onClick={() => setSelectedChat(chat)}
                   className={`p-4 cursor-pointer border-b border-gray-700 flex gap-3
-                    ${
-                      selectedChat?._id === chat._id
-                        ? "bg-[#2A3942]"
-                        : "hover:bg-[#2A3942]"
+                    ${selectedChat?._id === chat._id
+                      ? "bg-[#2A3942]"
+                      : "hover:bg-[#2A3942]"
                     }
                   `}
                 >
-                  {/* avatar */}
-                  {otherUser?.profilePic ? (
-                    <img
-                      src={otherUser.profilePic}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center">
-                      {otherUser?.name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  {/* AVATAR WITH ONLINE DOT */}
+                  <div className="relative">
+                    {otherUser?.profilePic ? (
+                      <img
+                        src={otherUser.profilePic}
+                        alt="User profile "
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center">
+                        {otherUser?.name?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+
+                    {isUserOnline(otherUser?._id) && (
+                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#202C33] rounded-full"></span>
+                    )}
+                  </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between">
