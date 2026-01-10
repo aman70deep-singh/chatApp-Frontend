@@ -10,9 +10,6 @@ const ChatWindow = ({ selectedChat }) => {
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
 
-
-
-
   useEffect(() => {
     if (!socket) return;
     socket.on("typing", () => setIsTyping(true));
@@ -33,26 +30,19 @@ const ChatWindow = ({ selectedChat }) => {
     if (!socket) return;
 
     const handleReceiveMessage = (message) => {
-      console.log("📩 receive-message:", message);
-
-
       if (message.chatId._id === selectedChat._id) {
         setMessages((prev) => [...prev, message]);
         socket.emit("chat-opened", {
           chatId: message.chatId._id,
           userId: user._id,
         });
-
       }
       else {
         console.log("message for another chat ");
       }
-
-
     };
 
     socket.on("receive-message", handleReceiveMessage);
-
     return () => {
       socket.off("receive-message", handleReceiveMessage);
     };
@@ -62,7 +52,6 @@ const ChatWindow = ({ selectedChat }) => {
     if (!socket) return;
 
     const handleStatusUpdated = ({ messageId, status }) => {
-      console.log("✔ status-updated:", messageId, status);
 
       setMessages((prev) =>
         prev.map((msg) =>
@@ -82,9 +71,6 @@ const ChatWindow = ({ selectedChat }) => {
     if (!socket) return;
 
     const handleSeen = ({ chatId }) => {
-      console.log("🔵 message-seen received for chat:", chatId);
-
-
       setMessages((prev) =>
         prev.map((msg) =>
           msg.chatId._id === chatId
@@ -103,9 +89,6 @@ const ChatWindow = ({ selectedChat }) => {
 
   useEffect(() => {
     if (!socket || !selectedChat || !user) return;
-    console.log("👀 emitting chat-opened:", selectedChat._id);
-
-
     socket.emit("chat-opened", {
       chatId: selectedChat._id,
       userId: user._id,
@@ -116,12 +99,10 @@ const ChatWindow = ({ selectedChat }) => {
 
   useEffect(() => {
     if (!socket || !selectedChat) return;
-    console.log("➡️ emitting join-chat:", selectedChat._id);
 
     socket.emit("join-chat", selectedChat._id);
 
     return () => {
-      console.log("⬅️ emitting leave-chat:", selectedChat._id);
 
       socket.emit("leave-chat", selectedChat._id);
     };
@@ -175,36 +156,76 @@ const ChatWindow = ({ selectedChat }) => {
           return (
             <div
               key={msg._id}
-              className={`flex ${isOwnMessage ? "justify-end" : "justify-start"
-                }`}
+              className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`relative max-w-[70%] px-3 py-2 rounded-lg text-xl
-            ${isOwnMessage
-                    ? "bg-[#DCF8C6] text-black rounded-br-none"
-                    : "bg-white text-black rounded-bl-none"
+                className={`relative max-w-[70%] overflow-hidden
+    ${msg.type === "image"
+                    ? ""
+                    : isOwnMessage
+                      ? "bg-[#DCF8C6] text-black rounded-lg rounded-br-none"
+                      : "bg-white text-black rounded-lg rounded-bl-none"
                   }`}
               >
-                <p>{msg.content}</p>
-                {isOwnMessage && (
-                  <span className="absolute bottom-1 right-1 text-xs flex items-center gap-1">
-                    {msg.status === "sent" && <span>✔</span>}
-                    {msg.status === "delivered" && <span>✔✔</span>}
-                    {msg.status === "seen" && <span className="text-blue-500">✔✔</span>}
-                  </span>
+
+                {/* IMAGE MESSAGE */}
+                {msg.type === "image" ? (
+                  <div className="relative">
+                    <img
+                      src={msg.imageUrl}
+                      alt="sent"
+                      className="max-w-[260px] max-h-[300px] rounded-lg object-cover cursor-pointer"
+                      onClick={() => window.open(msg.imageUrl, "_blank")}
+                    />
+
+                    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
+                      <span>
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+
+                      {isOwnMessage && (
+                        <>
+                          {msg.status === "sent" && <span>✔</span>}
+                          {msg.status === "delivered" && <span>✔✔</span>}
+                          {msg.status === "seen" && (
+                            <span className="text-blue-400">✔✔</span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+
+                  /* TEXT MESSAGE */
+                  <div className="px-3 py-2 text-xl relative">
+                    <p>{msg.content}</p>
+
+                    <div className="flex justify-end items-center gap-1 text-xs text-gray-500 mt-1">
+                      <span>
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+
+                      {isOwnMessage && (
+                        <>
+                          {msg.status === "sent" && <span>✔</span>}
+                          {msg.status === "delivered" && <span>✔✔</span>}
+                          {msg.status === "seen" && (
+                            <span className="text-blue-500">✔✔</span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
                 )}
-
-
-
-                {/* OPTIONAL: time */}
-                <p className="text-[18px] text-gray-500 text-right mt-0.5">
-                  {new Date(msg.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
               </div>
             </div>
+
           );
         })}
         <div ref={bottomRef} />

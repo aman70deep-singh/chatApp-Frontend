@@ -75,6 +75,7 @@ const ProfileModal = ({ onClose }) => {
           <div className="relative">
             <img
               src={image ? URL.createObjectURL(image) : user.profilePic}
+              alt=""
               className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
             />
 
