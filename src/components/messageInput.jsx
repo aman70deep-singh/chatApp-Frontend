@@ -1,5 +1,6 @@
 import axiosAuth from "../api/axiosAuth";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { BsEmojiSmile } from "react-icons/bs"; import EmojiPicker from "emoji-picker-react";
 import { useSocket } from "../context/socketContext.jsx";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoSend } from "react-icons/io5";
@@ -8,8 +9,11 @@ const MessageInput = ({ selectedChat, setMessages }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [typing, setTyping] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const socket = useSocket();
   const fileInputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -45,7 +49,24 @@ const MessageInput = ({ selectedChat, setMessages }) => {
       }
     }, timerLength);
   };
+  const onEmojiClick = (emojiData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+  };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.addEventListener("mousedown", handleClickOutside)
+
+    }
+
+  })
   const sendImageMessage = async () => {
     try {
       if (!imageFile || !selectedChat?._id) return;
@@ -73,10 +94,8 @@ const MessageInput = ({ selectedChat, setMessages }) => {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-
-
     } catch (error) {
-      console.error("❌ Error sending image message:", error);
+      console.error(" Error sending image message:", error);
     }
   };
 
@@ -110,6 +129,14 @@ const MessageInput = ({ selectedChat, setMessages }) => {
           }
         }}
       />
+      <button
+        type="button"
+        onClick={() => setShowEmojiPicker((prev) => !prev)}
+        className="text-xl px-2"
+      >
+        <BsEmojiSmile size={20} />
+      </button>
+
 
       <input
         value={newMessage}
@@ -156,6 +183,20 @@ const MessageInput = ({ selectedChat, setMessages }) => {
       >
         <IoSend size={20} />
       </button>
+      {showEmojiPicker && (
+        <div
+          ref={emojiPickerRef}
+          className="absolute bottom-16 left-400 z-50"
+        >
+          <EmojiPicker
+            onEmojiClick={onEmojiClick}
+            theme="dark"
+            height={350}
+            width={300}
+          />
+        </div>
+      )}
+
     </form>
   );
 };

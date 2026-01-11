@@ -34,7 +34,6 @@ const ChatWindow = ({ selectedChat }) => {
         setMessages((prev) => [...prev, message]);
         socket.emit("chat-opened", {
           chatId: message.chatId._id,
-          userId: user._id,
         });
       }
       else {
@@ -91,7 +90,6 @@ const ChatWindow = ({ selectedChat }) => {
     if (!socket || !selectedChat || !user) return;
     socket.emit("chat-opened", {
       chatId: selectedChat._id,
-      userId: user._id,
     });
   }, [selectedChat, socket, user]);
 
