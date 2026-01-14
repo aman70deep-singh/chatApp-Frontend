@@ -113,6 +113,45 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
     return () => socket.off("message-received", handleMessage);
   }, [socket]);
 
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("unread-count-updated", ({ chatId, message }) => {
+      setChats(prev =>
+        prev.map(chat =>
+          chat._id === chatId
+            ? {
+              ...chat,
+              unreadCount: (chat.unreadCount || 0) + 1,
+              latestMessage: message
+            }
+            : chat
+        )
+      );
+    });
+
+
+    return () => socket.off("unread-count-updated");
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("reset-unread-count", ({ chatId }) => {
+      setChats(prev =>
+        prev.map(chat =>
+          chat._id === chatId
+            ? { ...chat, unreadCount: 0 }
+            : chat
+        )
+      );
+    });
+
+    return () => socket.off("reset-unread-count");
+  }, [socket]);
+
+
   useEffect(() => {
     fetchChats();
   }, []);
@@ -250,7 +289,7 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
 
           {!loading &&
             chats.map((chat) => {
-
+              console.log("chat.latestMessage.content--------->>", chat.latestMessage?.content)
 
               const otherUser = chat.userIds?.find((u) => u._id !== user?._id);
 
@@ -287,9 +326,18 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between">
                       <p className="font-medium truncate">{otherUser?.name}</p>
-                      <span className="text-xs text-gray-400">
-                        {formatChatTime(chat.latestMessage?.createdAt)}
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400">
+                          {formatChatTime(chat.latestMessage?.createdAt)}
+                        </span>
+
+                        {chat.unreadCount > 0 && (
+                          <span className="bg-green-500 text-black text-xs px-2 rounded-full">
+                            {chat.unreadCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <p className="text-sm text-gray-400 truncate">

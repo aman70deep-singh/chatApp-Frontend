@@ -69,22 +69,21 @@ const ChatWindow = ({ selectedChat }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleSeen = ({ chatId }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
+    socket.on("message-seen-ticks", ({ chatId }) => {
+      setMessages(prev =>
+        prev.map(msg =>
           msg.chatId._id === chatId
             ? { ...msg, status: "seen" }
             : msg
         )
       );
-    };
-
-    socket.on("message-seen", handleSeen);
+    });
 
     return () => {
-      socket.off("message-seen", handleSeen);
+      socket.off("message-seen-ticks");
     };
   }, [socket]);
+
 
   useEffect(() => {
     if (!socket || !selectedChat || !user) return;

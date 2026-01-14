@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axiosPublic from "../api/axiosPublic.js";
+import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -52,46 +53,60 @@ const SignUp = () => {
                     </div>
 
                 </div>
-                <h1 className="text-center mb-2 text-gray-800 text-2xl font-bold">Create your account</h1>
-                <p className="text-center mb-6 text-gray-500">SignUp to continue to chatApp</p>
+                <h1 className="text-center mb-2 text-2xl font-bold" style={{ color: '#25D366' }}>Create your account</h1>
+                <p className="text-center mb-6" style={{ color: '#25D366' }}>SignUp to continue to chatApp</p>
 
                 {err && (
                     <p className="text-center text-xl mb-3 text-red-500">{err}</p>
                 )}
                 <form onSubmit={handleSignUp} className="space-y-4">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Enter your name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="w-full p-3 rounded-lg border outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <input
-                        type="text"
-                        name="email"
-                        placeholder="Enter your email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full p-3 rounded-lg border outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <input
-                        type="text"
-                        name="password"
-                        placeholder="Enter your password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full p-3 rounded-lg border outline-none focus:ring-2 focus:ring-green-500"
-                    />
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: '#25D366' }}>
+                            <FaUser />
+                        </span>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter your name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="w-full p-3 pl-10 rounded-lg border outline-none focus:ring-2 focus:ring-[#25D366]"
+                        />
+                    </div>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: '#25D366' }}>
+                            <FaEnvelope />
+                        </span>
+                        <input
+                            type="text"
+                            name="email"
+                            placeholder="Enter your email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full p-3 pl-10 rounded-lg border outline-none focus:ring-2 focus:ring-[#25D366]"
+                        />
+                    </div>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: '#25D366' }}>
+                            <FaLock />
+                        </span>
+                        <input
+                            type="text"
+                            name="password"
+                            placeholder="Enter your password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full p-3 pl-10 rounded-lg border outline-none focus:ring-2 focus:ring-[#25D366]"
+                        />
+                    </div>
                     <button
                         type="submit"
-                        className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-lg text-lg font-semibold transition"
-
+                        className="w-full bg-[#25D366] hover:bg-[#1da851] text-white py-4 rounded-lg text-lg font-semibold transition"
                     > SignUp</button>
                 </form>
-                <p className="text-center text-gray-600 mt-4">
+                <p className="text-center mt-4">
                     Already have an account?
-                    <Link to="/login" className="text-green-600 font-medium">Login</Link>
+                    <Link to="/login" className="font-medium hover:underline" style={{ color: '#25D366' }}>Login</Link>
                 </p>
             </div>
         </div>
