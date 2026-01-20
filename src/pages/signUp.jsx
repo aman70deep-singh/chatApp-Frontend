@@ -53,8 +53,8 @@ const SignUp = () => {
                     </div>
 
                 </div>
-                <h1 className="text-center mb-2 text-2xl font-bold" style={{ color: '#25D366' }}>Create your account</h1>
-                <p className="text-center mb-6" style={{ color: '#25D366' }}>SignUp to continue to chatApp</p>
+                <h1 className="text-center mb-2 text-2xl font-bold" style={{ color: '#6e706f' }}>Create your account</h1>
+                <p className="text-center mb-6" style={{ color: '#6e706f' }}>SignUp to continue to chatApp</p>
 
                 {err && (
                     <p className="text-center text-xl mb-3 text-red-500">{err}</p>

@@ -122,10 +122,7 @@ const MessageInput = ({ selectedChat, setMessages }) => {
           const file = e.target.files[0];
           if (file) {
             setImageFile(file);
-
             setImagePreview(URL.createObjectURL(file));
-
-            console.log("Selected image:", file);
           }
         }}
       />

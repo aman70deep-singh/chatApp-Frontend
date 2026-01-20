@@ -2,7 +2,7 @@ import axiosPublic from "../api/axiosPublic.js";
 import { useState } from "react";
 import { FaLock, FaEye, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -95,8 +95,8 @@ export const Login = () => {
         </button>
 
         <div className="mt-6 text-center">
-          Already have an account?{' '}
-          <a href="/signup" className="font-semibold hover:underline" style={{ color: '#25D366' }}>Signup</a>
+          Don't have an account?{' '}
+          <Link to="/signUp" className="font-semibold hover:underline" style={{ color: '#25D366' }}>SignUp</Link>
         </div>
       </form>
     </div>
