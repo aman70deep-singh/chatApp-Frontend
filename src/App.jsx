@@ -4,11 +4,13 @@ import Home from "./pages/home.jsx"
 import SignUp from './pages/signUp.jsx';
 import ProtectedRoute from './routes/protectedRoutes.jsx'
 import AuthRedirect from './components/AuthRedirect.jsx'
+import ForgotPassword from './pages/forgotPassword.jsx'
 
 function App() {
   return (
     <Routes>
       <Route path='/' element={<AuthRedirect />}></Route >
+      <Route path='/forgotPassword' element={<ForgotPassword />}></Route>
       <Route path='/login' element={<Login />}></Route>
       <Route path='/signUp' element={<SignUp></SignUp>}></Route>
       <Route path={'/home'} element={

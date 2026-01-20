@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axiosPublic from "../api/axiosPublic.js";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -10,7 +11,6 @@ const SignUp = () => {
         email: "",
         password: ""
     })
-    const [err, setError] = useState("");
     const handleChange = (e) => {
         e.preventDefault();
         setFormData({
@@ -29,12 +29,15 @@ const SignUp = () => {
                 }
             });
             if (response.data.success) {
-                navigate("/login");
+                toast.success("Account created successfully!");
+                setTimeout(() => {
+                    navigate("/login");
+                }, 1000);
             } else {
-                setError(response.data.error);
+                toast.error(response.data.error);
             }
         } catch (err) {
-            setError(
+            toast.error(
                 err.response?.data?.error ||
                 err.response?.data?.message ||
                 err.message ||
@@ -45,6 +48,7 @@ const SignUp = () => {
     }
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl ">
                 {/*logo*/}
                 <div className="flex justify-center mb-6">
@@ -56,9 +60,6 @@ const SignUp = () => {
                 <h1 className="text-center mb-2 text-2xl font-bold" style={{ color: '#6e706f' }}>Create your account</h1>
                 <p className="text-center mb-6" style={{ color: '#6e706f' }}>SignUp to continue to chatApp</p>
 
-                {err && (
-                    <p className="text-center text-xl mb-3 text-red-500">{err}</p>
-                )}
                 <form onSubmit={handleSignUp} className="space-y-4">
                     <div className="relative">
                         <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: '#25D366' }}>

@@ -3,18 +3,18 @@ import { useState } from "react";
 import { FaLock, FaEye, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
 import { useNavigate, Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError("Email and password are required");
+      toast.error("Email and password are required");
       return;
     }
     try {
@@ -29,7 +29,7 @@ export const Login = () => {
       login(userInfo, token);
       navigate("/home");
     } catch (err) {
-      setError(
+      toast.error(
         err.response?.data?.error ||
         err.response?.data?.message ||
         "Login failed"
@@ -38,18 +38,13 @@ export const Login = () => {
   };
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
+      <Toaster position="top-center" reverseOrder={false} />
 
       <form
         onSubmit={handleLogin}
         className="relative z-10 bg-white/80 shadow-2xl rounded-2xl p-10 w-full max-w-md h-auto backdrop-blur-md"
       >
         <h2 className="text-3xl font-extrabold mb-8 text-center" style={{ color: '#25D366', textShadow: '0 1px 2px #b2f5c0' }}>Login</h2>
-
-        {err && (
-          <p className="bg-red-100 text-red-600 p-2 text-center rounded mb-3">
-            {err}
-          </p>
-        )}
 
         <div className="relative mb-6">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" style={{ color: '#25D366' }}>
@@ -97,6 +92,10 @@ export const Login = () => {
         <div className="mt-6 text-center">
           Don't have an account?{' '}
           <Link to="/signUp" className="font-semibold hover:underline" style={{ color: '#25D366' }}>SignUp</Link>
+        </div>
+
+        <div className="mt-6 text-center">
+          <Link to="/forgotPassword" className="font-semibold hover:underline" style={{ color: '#2565d3ff' }}>Forgot Password</Link>
         </div>
       </form>
     </div>
