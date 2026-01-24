@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect } from "react";
+import Spinner from "./Spinner";
 const MessagesList = ({ messages, user, bottomRef, onLoadMore, hasNextPage, isLoading }) => {
     const containerRef = useRef(null);
     const prevScrollHeightRef = useRef(0);
@@ -9,7 +10,7 @@ const MessagesList = ({ messages, user, bottomRef, onLoadMore, hasNextPage, isLo
         if (
             prevFirstMessageIdRef.current &&
             currentFirstMessageId !== prevFirstMessageIdRef.current &&
-            !isLoading 
+            !isLoading
         ) {
             const scrollDiff = containerRef.current.scrollHeight - prevScrollHeightRef.current;
             containerRef.current.scrollTop += scrollDiff;
@@ -31,9 +32,7 @@ const MessagesList = ({ messages, user, bottomRef, onLoadMore, hasNextPage, isLo
             onScroll={handleScroll}
             className="flex-1 p-4 overflow-y-auto space-y-2">
             {isLoading && (
-                <div className="flex justify-center items-center py-4">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
-                </div>
+                <Spinner className="py-4" />
             )}
             {messages.map((msg) => {
                 const senderId =

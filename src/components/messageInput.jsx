@@ -4,12 +4,14 @@ import { BsEmojiSmile } from "react-icons/bs"; import EmojiPicker from "emoji-pi
 import { useSocket } from "../context/socketContext.jsx";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoSend } from "react-icons/io5";
+import Spinner from "./Spinner";
 const MessageInput = ({ selectedChat, setMessages }) => {
   const [newMessage, setNewMessage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [typing, setTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const socket = useSocket();
   const fileInputRef = useRef(null);
@@ -64,10 +66,11 @@ const MessageInput = ({ selectedChat, setMessages }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  },[])
+  }, [])
   const sendImageMessage = async () => {
     try {
-      if (!imageFile || !selectedChat?._id) return;
+      if (!imageFile || !selectedChat?._id || isSending) return;
+      setIsSending(true);
       const formData = new FormData();
       formData.append("chatId", selectedChat._id);
       formData.append("image", imageFile);
@@ -94,6 +97,8 @@ const MessageInput = ({ selectedChat, setMessages }) => {
       }
     } catch (error) {
       console.error(" Error sending image message:", error);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -159,13 +164,14 @@ const MessageInput = ({ selectedChat, setMessages }) => {
               <IoClose size={20} />
             </button>
 
-            {/* Send Button (STEP–3 me functional) */}
+            {/* Send Button */}
             <button
               type="button"
               onClick={sendImageMessage}
-              className="text-green-400 font-semibold"
+              disabled={isSending}
+              className="text-green-400 font-semibold disabled:opacity-50"
             >
-              <IoSend size={20} />
+              {isSending ? <Spinner size="w-5 h-5" /> : <IoSend size={20} />}
             </button>
           </div>
         </div>
