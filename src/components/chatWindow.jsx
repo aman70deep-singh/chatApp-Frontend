@@ -1,7 +1,7 @@
 import axiosAuth from "../api/axiosAuth.js";
 import MessageInput from "./messageInput.jsx";
 import ChatHeader from "./ChatHeader.jsx";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSocket } from "../context/socketContext.jsx";
 import { useAuth } from "../context/authContext.jsx";
 import MessagesList from "./MessagesList.jsx"
@@ -10,8 +10,13 @@ const ChatWindow = ({ selectedChat }) => {
   const { user } = useAuth();
   const socket = useSocket();
   const [messages, setMessages] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
+  const lastMessageIdRef = useRef(null);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     if (!socket) return;
@@ -24,8 +29,14 @@ const ChatWindow = ({ selectedChat }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "auto" });
+    if (messages.length > 0) {
+      const currentLastMessageId = messages[messages.length - 1]._id;
+      if (!lastMessageIdRef.current || lastMessageIdRef.current !== currentLastMessageId) {
+        if (bottomRef.current) {
+          bottomRef.current.scrollIntoView({ behavior: "auto" });
+        }
+      }
+      lastMessageIdRef.current = currentLastMessageId;
     }
   }, [messages]);
 
@@ -108,15 +119,41 @@ const ChatWindow = ({ selectedChat }) => {
     };
   }, [selectedChat, socket]);
 
+  const fetchMessages = useCallback(async (cursor = null) => {
+    if (!selectedChat?._id || loadingRef.current) return;
+
+    loadingRef.current = true;
+    setIsLoading(true);
+    try {
+      const url = `/message/${selectedChat._id}?limit=20${cursor ? `&cursor=${cursor}` : ""}`;
+      const response = await axiosAuth.get(url);
+      const { messages: fetchedMessages, nextCursor, hasNextPage } = response.data.data;
+      const orderedMessages = [...fetchedMessages].reverse();
+
+      if (cursor) {
+        setMessages((prev) => [...orderedMessages, ...prev]);
+      } else {
+        setMessages(orderedMessages);
+      }
+
+      setNextCursor(nextCursor);
+      setHasNextPage(hasNextPage);
+    } catch (error) {
+      console.error("Fetch Messages Error:", error);
+    } finally {
+      setIsLoading(false);
+      loadingRef.current = false;
+    }
+  }, [selectedChat?._id]);
+
   useEffect(() => {
-    if (!selectedChat) return;
-    const fetchMessages = async () => {
-      if (!selectedChat?._id) return;
-      const response = await axiosAuth.get(`/message/${selectedChat._id}`);
-      setMessages(response.data.data);
-    };
-    fetchMessages();
-  }, [selectedChat]);
+    if (selectedChat) {
+      setMessages([]);
+      setNextCursor(null);
+      setHasNextPage(false);
+      fetchMessages();
+    }
+  }, [selectedChat, fetchMessages]);
   if (!selectedChat) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -135,6 +172,9 @@ const ChatWindow = ({ selectedChat }) => {
         messages={messages}
         user={user}
         bottomRef={bottomRef}
+        onLoadMore={() => fetchMessages(nextCursor)}
+        hasNextPage={hasNextPage}
+        isLoading={isLoading}
       />
 
       {/* INPUT BOX */}

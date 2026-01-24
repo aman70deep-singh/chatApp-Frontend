@@ -62,11 +62,9 @@ const MessageInput = ({ selectedChat, setMessages }) => {
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.addEventListener("mousedown", handleClickOutside)
-
+      document.removeEventListener("mousedown", handleClickOutside)
     }
-
-  })
+  },[])
   const sendImageMessage = async () => {
     try {
       if (!imageFile || !selectedChat?._id) return;

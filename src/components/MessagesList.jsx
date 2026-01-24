@@ -1,6 +1,40 @@
-const MessagesList = ({ messages, user, bottomRef }) => {
+import { useRef, useLayoutEffect } from "react";
+const MessagesList = ({ messages, user, bottomRef, onLoadMore, hasNextPage, isLoading }) => {
+    const containerRef = useRef(null);
+    const prevScrollHeightRef = useRef(0);
+    const prevFirstMessageIdRef = useRef(null);
+    useLayoutEffect(() => {
+        if (!containerRef.current) return;
+        const currentFirstMessageId = messages.length > 0 ? messages[0]._id : null;
+        if (
+            prevFirstMessageIdRef.current &&
+            currentFirstMessageId !== prevFirstMessageIdRef.current &&
+            !isLoading 
+        ) {
+            const scrollDiff = containerRef.current.scrollHeight - prevScrollHeightRef.current;
+            containerRef.current.scrollTop += scrollDiff;
+        }
+        prevScrollHeightRef.current = containerRef.current.scrollHeight;
+        prevFirstMessageIdRef.current = currentFirstMessageId;
+    }, [messages, isLoading]);
+    const handleScroll = () => {
+        if (!containerRef.current) return;
+
+        if (containerRef.current.scrollTop <= 5 && hasNextPage && !isLoading) {
+            onLoadMore();
+        }
+    }
+
     return (
-        <div className="flex-1 p-4 overflow-y-auto space-y-2">
+        <div
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 p-4 overflow-y-auto space-y-2">
+            {isLoading && (
+                <div className="flex justify-center items-center py-4">
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+                </div>
+            )}
             {messages.map((msg) => {
                 const senderId =
                     typeof msg.sender === "object" ? msg.sender._id : msg.sender;
