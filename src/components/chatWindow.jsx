@@ -98,6 +98,24 @@ const ChatWindow = ({ selectedChat }) => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessageDeleted = ({ messageId }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, isDeleted: true, content: "This message was deleted", type: "text", imageUrl: undefined } : msg
+        )
+      );
+    };
+
+    socket.on("message-deleted", handleMessageDeleted);
+
+    return () => {
+      socket.off("message-deleted", handleMessageDeleted);
+    };
+  }, [socket]);
+
 
   useEffect(() => {
     if (!socket || !selectedChat || !user) return;
@@ -146,6 +164,17 @@ const ChatWindow = ({ selectedChat }) => {
     }
   }, [selectedChat?._id]);
 
+  const handleDeleteMessage = useCallback(async (messageId, type) => {
+    try {
+      await axiosAuth.delete(`/message/${messageId}`, { data: { type } });
+      if (type === "me") {
+        setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      }
+    } catch (error) {
+      console.error("Delete Message Error:", error);
+    }
+  }, []);
+
   useEffect(() => {
     if (selectedChat) {
       setMessages([]);
@@ -173,6 +202,7 @@ const ChatWindow = ({ selectedChat }) => {
         user={user}
         bottomRef={bottomRef}
         onLoadMore={() => fetchMessages(nextCursor)}
+        onDeleteMessage={handleDeleteMessage}
         hasNextPage={hasNextPage}
         isLoading={isLoading}
       />
