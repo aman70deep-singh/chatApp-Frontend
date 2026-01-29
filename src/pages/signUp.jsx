@@ -23,7 +23,7 @@ const SignUp = () => {
 
         try {
             e.preventDefault()
-            const response = await axiosPublic.post("http://localhost:5000/auth/register", formData, {
+            const response = await axiosPublic.post("/auth/register", formData, {
                 headers: {
                     "Content-Type": "application/json"
                 }

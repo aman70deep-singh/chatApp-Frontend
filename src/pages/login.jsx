@@ -19,7 +19,7 @@ export const Login = () => {
     }
     try {
       const response = await axiosPublic.post(
-        "http://localhost:5000/auth/login",
+        "/auth/login",
         {
           email,
           password,
