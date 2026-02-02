@@ -1,12 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import Spinner from "./Spinner";
 
 const AuthRedirect = () => {
-    const { token, loading } = useAuth();
+    const { token, user, loading } = useAuth();
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <Spinner />;
 
-    return token ? (
+    return (token || user) ? (
         <Navigate to="/home" replace />
     ) : (
         <Navigate to="/login" replace />
