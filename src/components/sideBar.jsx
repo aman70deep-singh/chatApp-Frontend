@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext.jsx";
 import { useSocket } from "../context/socketContext.jsx";
 import axiosAuth from "../api/axiosAuth.js";
@@ -11,6 +12,7 @@ import SearchResults from "./SearchResults.jsx"
 
 const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const socket = useSocket();
   const [chats, setChats] = useState([]);
   const [search, setSearch] = useState("");
@@ -25,7 +27,7 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
   const handleLogout = () => {
     setShowLogoutConfirm(false);
     logout();
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   const formatChatTime = (date) => {
