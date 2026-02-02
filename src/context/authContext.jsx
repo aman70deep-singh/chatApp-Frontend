@@ -3,8 +3,18 @@ import { useState, createContext, useContext, useEffect } from "react";
 const authContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState();
-  const [token, setToken] = useState();
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser && savedUser !== "undefined") {
+      try {
+        return JSON.parse(savedUser);
+      } catch (err) {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
   const login = (userData, jwtToken) => {
