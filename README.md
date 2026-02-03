@@ -1,46 +1,97 @@
-# Getting Started with Create React App
+# 🚀 Chat Application Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive, and real-time chat interface built with **React 19**, **Tailwind CSS**, and **Socket.io**. This frontend provides a seamless messaging experience with features like real-time typing indicators, read receipts, and a premium UI/UX.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🛠 Tech Stack
 
-### `npm start`
+- **Framework:** React 19
+- **Styling:** Tailwind CSS (Modern, Responsive Design)
+- **Icons:** React Icons
+- **Real-time:** Socket.io-client
+- **State Management:** React Context API
+- **Routing:** React Router v7
+- **Notifications:** React Hot Toast
+- **API Handling:** Axios
+- **Utilities:** Emoji Picker React
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+##  Key Features
 
-### `npm test`
+###  Real-time Messaging
+- Sub-100ms latency communication using **Socket.io**.
+- **Typing Indicators:** See when your friends are typing.
+- **Online Status:** Real-time tracking of active users.
+- **Read Receipts:** Track message status (`sent` ➔ `delivered` ➔ `seen`).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+###  Secure Authentication
+- **Full Auth Flow:** Login, Signup, and Logout.
+- **OTP Verification:** Secure account verification.
+- **Password Recovery:** Forgot password and reset password functionality.
+- **Protected Routes:** Unauthorized users are automatically redirected to login.
 
-### `npm run build`
+###  Premium UI/UX
+- **Modern Design:** Sleek, glassmorphic elements and smooth transitions.
+- **Emoji Support:** Integrated emoji picker for expressive messaging.
+- **Image Sharing:** Send and view images within the chat.
+- **Responsive Layout:** Optimized for both mobile and desktop screens.
+- **Search:** Quickly find users and start new conversations.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+###  Advanced Functionality
+- **Infinite Scrolling:** Optimized message loading with cursor-based pagination (Backend integration).
+- **Profile Management:** View and edit user profiles.
+- **Message Deletion:** Support for "Delete for Me" and "Delete for Everyone".
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+##  Getting Started
 
-### `npm run eject`
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
+- Running [Backend Service](https://github.com/aman70deep-singh/chatApp-Backend)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Installation
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/aman70deep-singh/chatApp-Frontend.git
+   cd chatApp-Frontend
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+3. **Environment Setup:**
+   Create a `.env` file in the root directory and add:
+   ```env
+   REACT_APP_API_URL=http://localhost:5000
+   ```
 
-## Learn More
+4. **Start the development server:**
+   ```bash
+   npm run start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+##  Project Structure
+
+```text
+src/
+├── api/            # API service configurations
+├── components/     # Reusable UI components (Modals, Buttons, etc.)
+├── context/        # Socket and Auth context providers
+├── pages/          # Full-page components (Home, Login, Signup)
+├── routes/         # Navigation and route protection
+├── App.jsx         # Main application entry
+└── index.jsx       # React DOM rendering
+```
+
+
+
+
