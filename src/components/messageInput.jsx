@@ -1,6 +1,7 @@
 import axiosAuth from "../api/axiosAuth";
 import { useState, useRef, useEffect } from "react";
-import { BsEmojiSmile } from "react-icons/bs"; import EmojiPicker from "emoji-picker-react";
+import { BsEmojiSmile } from "react-icons/bs";
+import EmojiPicker from "emoji-picker-react";
 import { useSocket } from "../context/socketContext.jsx";
 import { FiPlus } from "react-icons/fi";
 import { IoClose, IoSend } from "react-icons/io5";

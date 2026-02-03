@@ -97,13 +97,18 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
       return;
     }
     const handleMessage = (message) => {
-      setChats((prev) =>
-        prev.map((chat) =>
-          chat._id === message.chatId._id
-            ? { ...chat, latestMessage: message }
-            : chat
-        )
-      );
+      setChats((prev) => {
+        const chatExists = prev.find((c) => c._id === message.chatId._id);
+        if (chatExists) {
+          return prev.map((chat) =>
+            chat._id === message.chatId._id
+              ? { ...chat, latestMessage: message }
+              : chat
+          );
+        } else {
+          return [{ ...message.chatId, latestMessage: message }, ...prev];
+        }
+      });
     };
     socket.on("message-received", handleMessage);
     return () => socket.off("message-received", handleMessage);
@@ -113,17 +118,29 @@ const Sidebar = ({ setSelectedChat, selectedChat, onlineUsers }) => {
     if (!socket) return;
 
     socket.on("unread-count-updated", ({ chatId, message }) => {
-      setChats(prev =>
-        prev.map(chat =>
-          chat._id === chatId
-            ? {
-              ...chat,
-              unreadCount: (chat.unreadCount || 0) + 1,
-              latestMessage: message
-            }
-            : chat
-        )
-      );
+      setChats((prev) => {
+        const chatExists = prev.find((c) => c._id === chatId);
+        if (chatExists) {
+          return prev.map((chat) =>
+            chat._id === chatId
+              ? {
+                ...chat,
+                unreadCount: (chat.unreadCount || 0) + 1,
+                latestMessage: message,
+              }
+              : chat
+          );
+        } else {
+          return [
+            {
+              ...message.chatId,
+              unreadCount: 1,
+              latestMessage: message,
+            },
+            ...prev,
+          ];
+        }
+      });
     });
     return () => socket.off("unread-count-updated");
   }, [socket]);
